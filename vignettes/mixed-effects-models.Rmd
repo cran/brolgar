@@ -1,0 +1,199 @@
+---
+title: "Using brolgar to understand Mixed Effects Models"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mixed-effects-models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r knitr-setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(brolgar)
+library(lme4)
+library(modelr)
+library(ggplot2)
+
+```
+
+Just as it is important to explore your data before modelling, it is important to explore your data after you fit a model, and during the modelling process.
+
+Let's take our wages data
+
+```{r print-wages}
+wages
+```
+
+We might explore this by looking at experience against wages, for each individual:
+
+```{r wages-ggplot}
+
+gg_wages_all <- 
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) + 
+  geom_line(alpha = 0.25)
+
+gg_wages_all
+```
+But - Ugh. Spaghetti plot.
+
+Let's look at a random sample of people using `facet_sample()`
+
+```{r wages-ggplot-sample}
+gg_wages_all +
+  facet_sample()
+```
+
+Now let's look at all of the data, arranging by `unemploy_rate`:
+
+
+```{r}
+gg_wages_all + facet_strata()
+gg_wages_all + 
+  facet_strata(along = unemploy_rate)
+
+gg_wages_all + 
+  facet_strata(along = xp_since_ged) 
+
+gg_wages_all + facet_wrap(~high_grade)
+```
+
+So let's fit a model where we look at the impact of xp, unemployment rate, and fit an intercept for each individual.
+
+```{r fit-int}
+library(lme4)
+wages_fit_int <- lmer(ln_wages ~ xp + ged + unemploy_rate + (xp |id), 
+                      data = wages)
+```
+
+We can use the tools from `modelr` to add predictions and residuals to the data
+
+```{r wages-aug}
+library(modelr)
+wages_aug <- wages %>%
+  add_predictions(wages_fit_int, var = "pred_int") %>%
+  add_residuals(wages_fit_int, var = "res_int")
+```
+
+Now let's look at the predictions over xp
+
+```{r gg-wages-aug}
+ggplot(wages_aug,
+       aes(x = xp,
+           y = pred_int,
+           group = id)) + 
+  geom_line(alpha = 0.4) 
+
+```
+
+Ugh. Straight spaghetti. Let's sample that.
+
+```{r gg-wages-sample}
+ggplot(wages_aug,
+       aes(x = xp,
+           y = pred_int,
+           group = id)) + 
+  geom_line() + 
+  facet_sample()
+```
+
+And let's explore these according to residuals.
+
+```{r}
+ggplot(wages_aug,
+       aes(x = xp,
+           y = pred_int,
+           group = id)) + 
+  geom_line() + 
+  facet_strata(along = res_int)
+```
+
+
+Now let's add in the data to the predictions.
+
+```{r gg-wages-predictions}
+wages_aug %>%
+  sample_n_keys(size = 9) %>%
+  ggplot(aes(x = xp,
+             y = pred_int,
+             group = id,
+             colour = factor(id))) + 
+  geom_line() + 
+  geom_point(aes(x = xp,
+                 y = ln_wages,
+                 colour = factor(id))) + 
+  facet_wrap(~id) + 
+  theme(legend.position = "none")
+```
+
+What if we grabbed a sample of those who have the best, middle, and worst residuals? Those who are closest to these values:
+
+```{r summary-residuals}
+summary(wages_aug$res_int)
+```
+
+We can use `keys_near()` to return those specified keys that are close to these values. Because this is a `tsibble` object, we don't need to specify the `key` variable here.
+
+```{r wages-keys-near}
+wages_aug_near <- wages_aug %>%
+  keys_near(var = res_int)
+
+wages_aug_near
+```
+
+This shows us the keys where we the residuals match closest to the five number summary. 
+
+We can plot this data by joining it back to the wages data with predictions, to see what the spread of predictions is like.
+
+```{r join-wages-near}
+library(dplyr)
+
+wages_aug_near_full <- left_join(wages_aug_near,
+                                 wages_aug,
+                                 by = "id") 
+
+gg_wages_near <- 
+  ggplot(wages_aug_near_full,
+       aes(x = xp,
+           y = pred_int,
+           group = id,
+           colour = stat)) + 
+  geom_line() + 
+  geom_point(aes(y = ln_wages)) 
+
+gg_wages_near
+
+gg_wages_near + 
+ facet_wrap(~stat) +
+  theme(legend.position = "none")
+```
+
+We can also use `stratify_along` to group by the worst fits
+
+```{r gg-stratify-residuals}
+wages_aug %>%
+  stratify_keys(n_strata = 12, 
+                along = res_int) %>%
+  sample_n_keys(size = 9) %>%
+  ggplot(aes(x = xp,
+             y = pred_int,
+             group = id,
+             colour = factor(id))) + 
+  geom_line() + 
+  geom_point(aes(x = xp,
+                 y = ln_wages,
+                 colour = factor(id))) + 
+  facet_wrap(~.strata) + 
+  theme(legend.position = "none")
+
+```

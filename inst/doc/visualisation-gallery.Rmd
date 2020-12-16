@@ -1,0 +1,289 @@
+---
+title: "Visualisation Gallery"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{visualisation-gallery}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r libraries}
+library(brolgar)
+library(ggplot2)
+```
+
+`brolgar` explores two ways to explore the data, first exploring the raw data, then exploring the data using summaries. This vignette displays a variety of ways to explore your data around these two ideas.
+
+# Exploring raw data
+
+When you first receive your data, you want to look at as much raw data as possible. This section discusses a few techniques to make it more palatable to explore your raw data without getting too much overplotting.
+
+## Select a sample of individuals
+
+Sample n random individuals to explore
+(Note: Possibly not representative)
+
+For example, we can sample 20 random individuals, and then plot them. (perhaps change `sample_n_keys` into `sample_id`.)
+
+```{r selected-sample}
+
+wages %>%
+  sample_n_keys(size = 20)
+
+wages %>%
+  sample_n_keys(size = 20) %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id)) + 
+  geom_line()
+
+
+```
+
+## Filter only those with certain number of observations
+
+There was a variety of the number of observations in the data - some with only a few, and some with many. We can filter by the number of the observations in the data using `add_n_obs()`, which adds a new column, `n_obs`, the number of observations for each key. 
+
+```{r show-add-n-obs}
+wages %>%
+  add_n_obs()
+```
+
+We can then filter our data based on the number of observations, and combine this with the previous steps to sample the data using `sample_n_keys()`.
+
+```{r filter-sample}
+library(dplyr)
+wages %>%
+  add_n_obs() %>%
+  filter(n_obs >= 5) %>%
+  sample_n_keys(size = 20) %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id)) + 
+  geom_line()
+```
+
+
+## Clever facets: `facet_strata`
+
+`brolgar` provides some clever facets to help make it easier to explore your data. `facet_strata()` splits the data into 12 groups by default:
+
+```{r facet-strata}
+set.seed(2019-07-23-1936)
+library(ggplot2)
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_strata()
+```
+
+You can control the number with `n_strata`:
+
+```{r facet-strata-options}
+set.seed(2019-07-23-1936)
+library(ggplot2)
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_strata(n_strata = 6)
+```
+
+And have your regular control with other facet options:
+
+```{r facet-strata-nrow-ncol}
+set.seed(2019-07-23-1936)
+library(ggplot2)
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_strata(n_strata = 6,
+               nrow = 3,
+               ncol = 2)
+```
+
+## Clever facets: `facet_sample`
+
+`facet_sample()` allows you to specify a number of samples per plot with, "n per plot" and the number of facets to show with "n facets". By default it splits the data into 12 facets with 3 per group:
+
+```{r facet-sample}
+set.seed(2019-07-23-1937)
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_sample()
+```
+
+This allows for you to look at a larger sample of the data.
+
+## Clever facets with number of observations
+
+We can combine `add_n_obs()` and `filter()` to show only series which have only 5 or more observations:
+
+```{r facet-sample-n-obs}
+set.seed(2019-07-23-1937)
+wages %>%
+  add_n_obs() %>%
+  filter(n_obs >= 5) %>%
+ggplot(aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_sample()
+```
+
+These approaches allow you to view large sections of the raw data, but it does not point out individuals that are "interesting", in the sense of those being outliers, or representative of the middle of the group.
+
+# Exploring data using features
+
+You can plot the features of the data by first identifying features of interest and then joining them back to the data. For a more details explanation of this, see the vignette, "Finding Features".
+
+## Plot monotonic individual series
+
+In this example, we will plot those whose values only increase or decrease with `feat_monotonic` and `gghighlight`:
+
+```{r gg-high-mono}
+library(gghighlight)
+wages %>%
+  features(ln_wages, feat_monotonic) %>%
+  left_join(wages, by = "id") %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id)) +
+  geom_line() + 
+  gghighlight(increase)
+```
+
+You can explore the available features, see the function [References](https://brolgar.njtierney.com/reference/index.html)
+
+## Plot individuals with negative slope
+
+We can find those individuals who have a negative slope using `key_slope`. For more detail on `key_slope`, see the [Exploratory Modelling](https://brolgar.njtierney.com/articles/exploratory-modelling.html) vignette.
+
+```{r wages-key-slope}
+wages %>% key_slope(ln_wages ~ xp)
+```
+
+`key_slope` fits a linear model for each key, and returns a `tibble` with the `key` columns and `.intercept` and `.slope_<varname>`, and any other explanatory variables. 
+
+We can use `gghighlight` to identify individuals with an overall negative slope:
+
+```{r wages-ts-slope}
+library(dplyr)
+wages_slope <- wages %>%
+  key_slope(ln_wages ~ xp) %>%
+  left_join(wages, by = "id")
+
+gg_wages_slope <- ggplot(wages_slope,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) + 
+  geom_line() 
+
+gg_wages_slope + 
+  gghighlight(.slope_xp < 0)
+```
+
+With a positive slope
+
+```{r wages-ts-slope-pos}
+gg_wages_slope + 
+  gghighlight(.slope_xp > 0)
+
+```
+
+We could even facet by slope:
+
+```{r wags-ts-slope-facet}
+gg_wages_slope + 
+  facet_wrap(~.slope_xp > 0)
+```
+
+# Move along features with `facet_strata`
+
+## Visualise along slope
+
+We can use the `along` argument of `facet_strata()` to break the data according to some feature. The only catch is that the data passed must be a `tsibble`.
+
+For example, we could break the data `along` the `.slope_xp` variable into 12 groups, which by default will be arranged in descending order. So here we have to groups broken up from most positive slope to most negative.
+
+```{r strata-along}
+wages_slope <- wages %>%
+  key_slope(ln_wages ~ xp) %>%
+  # ensures that we keep the data as a `tsibble`
+  left_join(x = wages, y = ., by = "id")
+
+gg_wages_slope <- ggplot(wages_slope,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) + 
+  geom_line() 
+
+gg_wages_slope +
+  facet_strata(n_strata = 12,
+               along = .slope_xp)
+```
+
+We could then do this along other features of a five number summary:
+
+```{r wages-features-along}
+wages_five <- wages %>%
+    features(ln_wages, feat_five_num) %>%
+  # ensures that we keep the data as a `tsibble`
+  left_join(x = wages, y = ., by = "id")
+
+wages_five
+```
+
+
+```{r gg-wages-features-along}
+gg_wages_five <- ggplot(wages_five,
+                         aes(x = xp,
+                             y = ln_wages,
+                             group = id)) + 
+                     geom_line() 
+
+gg_wages_five
+```
+
+We could move along the minimum:
+
+```{r wages-features-min}
+gg_wages_five +
+  facet_strata(n_strata = 12,
+               along = min)
+```
+
+We could move along the maximum:
+
+```{r wages-features-max}
+gg_wages_five +
+  facet_strata(n_strata = 12,
+               along = max)
+```
+
+We could move along the median:
+```{r wages-features-med}
+gg_wages_five +
+  facet_strata(n_strata = 12,
+               along = med)
+```
+
+Under the hood there needs to be some summarisation of the data to arrange it like this, details on the implementation are in the helpfile for `?facet_strata`.

@@ -1,0 +1,305 @@
+---
+title: "Getting Started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r knitr-set-chunk, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(brolgar)
+```
+
+When we first get a longitudinal dataset, you need to understand some of its structure. This vignette demonstrates part of the process of understanding your new longitudinal data.
+
+# Setting up your data
+
+To use `brolgar` with your work, you should convert your longitudinal data into a time series `tsibble` using the `tsibble` package. To do so, you need to identify the unique identifying `key`, and time `index`. For example:
+
+```{r wages-ts, eval = FALSE}
+wages <- as_tsibble(wages,
+                    key = id,
+                    index = xp,
+                    regular = FALSE)
+```
+
+To learn more about longitudinal data as time series, see the vignette: [Longitudinal Data Structures](https://brolgar.njtierney.com/articles/longitudinal-data-structures.html).
+
+# Basic summaries of the data
+
+When you first get a dataset, you need to get an overall sense of what is in the data.
+
+## How many observations are there?
+
+We can kind the number of keys using `n_keys()`:
+
+```{r n-obs}
+n_keys(wages)
+```
+
+Note that this is a single number, in this case, we have `r n_keys(wages)` observations.
+
+However, we might want to know how many observations we have for each individual. If we want the number of observations in each variable, then we can use `n_obs()` with `features()`.
+
+```{r n-key-obs}
+wages %>%
+  features(ln_wages, n_obs)
+```
+
+A plot of this can help provide better understanding of the distribution of observations.
+
+```{r plot-nobs}
+library(ggplot2)
+wages %>%
+  features(ln_wages, n_obs) %>%
+  ggplot(aes(x = n_obs)) + 
+  geom_bar()
+```
+
+### `add_n_obs()`
+
+You can add information about the number of observations for each key with `add_n_obs()`:
+
+```{r show-add-n-obs}
+wages %>% add_n_obs()
+```
+
+Which you can then use to `filter()` observations:
+
+```{r show-add-obs-filter}
+library(dplyr)
+wages %>% 
+  add_n_obs() %>%
+  filter(n_obs > 3)
+```
+
+We can also look at the distance between experience, to understand what the distribution of experience is
+
+```{r wages-xp}
+wages_xp_range <- wages %>% 
+  features(xp,
+           feat_ranges)
+
+ggplot(wages_xp_range,
+       aes(x = range_diff)) + 
+  geom_histogram()
+```
+
+We can then explore the range of experience to see what the most common experience is
+
+```{r wages-xp-prop}
+wages_xp_range %>% 
+  count(range_diff) %>% 
+  mutate(prop = n / sum(n)) 
+
+```
+
+
+
+## Efficiently exploring longitudinal data
+
+To avoid staring at a plate of spaghetti, you can look at a random subset of the data. Brolgar provides some intuitive functions to help with this.
+
+### `sample_n_keys()`
+
+In `dplyr`, you can use `sample_n()` to sample `n` observations. Similarly, with `brolgar`, you can take a random sample of `n` keys using `sample_n_keys()`:
+
+```{r plot-sample-n-keys}
+set.seed(2019-7-15-1300)
+wages %>%
+  sample_n_keys(size = 10) %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id)) + 
+  geom_line()
+```
+
+## Filtering observations
+
+You can combine `sample_n_keys()` with `add_n_obs()` and `filter()` to only show keys with many observations:
+
+```{r plot-filter-sample-n-keys}
+library(dplyr)
+wages %>%
+  add_n_obs() %>%
+  filter(n_obs > 5) %>%
+  sample_n_keys(size = 10) %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id)) + 
+  geom_line()
+```
+
+(Note: `sample_frac_keys()`, which samples a fraction of available keys.)
+
+Now, how do you break these into many plots?
+
+## Clever facets: `facet_strata`
+
+`brolgar` provides some clever facets to help make it easier to explore your data. `facet_strata()` splits the data into 12 groups by default:
+
+```{r facet-strata}
+set.seed(2019-07-23-1936)
+library(ggplot2)
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_strata()
+```
+
+But you could ask it to split the data into a more groups
+
+```{r facet-strata-20}
+set.seed(2019-07-25-1450)
+library(ggplot2)
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_strata(n_strata = 20)
+```
+
+And what if you want to show only a few samples per facet?
+
+## Clever facets: `facet_sample`
+
+`facet_sample()` allows you to specify the number of keys per facet, and the number of facets with `n_per_facet` and `n_facets`. It splits the data into 12 facets with 3 per facet by default:
+
+```{r facet-sample}
+set.seed(2019-07-23-1937)
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_sample()
+
+```
+
+But you can specify your own number:
+
+```{r facet-sample-3by-20}
+set.seed(2019-07-25-1533)
+ggplot(wages,
+       aes(x = xp,
+           y = ln_wages,
+           group = id)) +
+  geom_line() +
+  facet_sample(n_per_facet = 3,
+               n_facets = 20)
+
+```
+
+Under the hood, `facet_sample()` and `facet_strata()` use `sample_n_keys()` and `stratify_keys()`.
+
+## Exploratory modelling
+
+You can fit a linear model for each key using `key_slope()`. This returns the intercept and slope estimate for each key, given some linear model formula. We can get the number of observations, and slope information for each individual to identify those that are decreasing over time. 
+
+```{r use-gghighlight}
+key_slope(wages,ln_wages ~ xp)
+```
+
+We can then join these summaries back to the data:
+
+```{r show-wages-lg}
+library(dplyr)
+wages_slope <- key_slope(wages,ln_wages ~ xp) %>%
+  left_join(wages, by = "id") 
+
+wages_slope
+```
+
+And highlight those individuals with a negative slope using `gghighlight`:
+
+```{r use-gg-highlight}
+library(gghighlight)
+
+wages_slope %>% 
+  as_tibble() %>% # workaround for gghighlight + tsibble
+  ggplot(aes(x = xp, 
+             y = ln_wages, 
+             group = id)) + 
+  geom_line() +
+  gghighlight(.slope_xp < 0)
+```
+
+
+### Find keys near other summaries with `keys_near`
+
+We could take our slope information and find those individuals who are representative of the min, median, maximum, etc of growth, using `keys_near()`:
+
+```{r keys-near}
+wages_slope %>%
+  keys_near(key = id,
+            var = .slope_xp,
+            funs = l_three_num)
+```
+
+```{r keys-near-plot}
+wages_slope %>%
+  keys_near(key = id,
+            var = .slope_xp,
+            funs = l_three_num) %>%
+  left_join(wages, by = "id") %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id,
+             colour = stat)) + 
+  geom_line()
+```
+
+
+## Finding features in longitudinal data
+
+You can extract `features` of longitudinal data using the `features` function, from `fabletools`. You can, for example, calculate the minimum of a given variable for each key by providing a named list like so:
+
+```{r features-min}
+wages %>%
+  features(ln_wages, 
+           list(min = min))
+```
+
+`brolgar` provides some sets of features, which start with `feat_`.
+
+For example, the five number summary is `feat_five_num`:
+
+```{r features-five-num}
+wages %>%
+  features(ln_wages, feat_five_num)
+```
+
+Or finding those whose values only increase or decrease with `feat_monotonic`
+
+```{r features-monotonic}
+wages %>%
+  features(ln_wages, feat_monotonic)
+```
+
+## Linking individuals back to the data
+
+You can join these features back to the data with `left_join`, like so:
+
+```{r features-left-join}
+wages %>%
+  features(ln_wages, feat_monotonic) %>%
+  left_join(wages, by = "id") %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id)) +
+  geom_line() + 
+  gghighlight(increase)
+```

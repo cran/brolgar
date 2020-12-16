@@ -1,0 +1,196 @@
+---
+title: "Identify Interesting Observations"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{id-interesting-obs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+
+library(brolgar)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+This vignette unpacks how to find interesting individuals.
+
+Let's say we calculate a slope for each individual `key`, using `keys_slope()`:
+
+```{r wages-slope}
+wages_slope <- key_slope(wages, ln_wages ~ xp) 
+wages_slope
+```
+
+This is neat! But now we want to know those `keys` that are **nearest** to some set of summary statistics of the slope. By **nearest** here we mean which values have the smallest numerical difference.
+
+Let's say the _five number summary_:
+
+```{r summary-slope}
+summary(wages_slope$.slope_xp)
+```
+
+If want to find those individuals that have slopes **near** these values.
+
+We can do this using `keys_near()`, which returns those nearest to some summary
+statistics. In this case, it is the five number summary. In the next section we describe how you can provide your own named list of functions to use.
+
+```{r use-summarise-fivenum}
+
+wages_slope_near <- wages_slope %>%
+  keys_near(key = id,
+            var = .slope_xp)
+
+wages_slope_near
+
+```
+
+We can then join this information back against the data and plot those 
+interesting individuals:
+
+```{r plot-keys-near}
+
+wages_slope_near %>%
+  left_join(wages, by = "id") %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id,
+             colour = stat)) + 
+  geom_line()
+
+```
+
+You could also, with a bit of work, show these lines against the background using gghighlight
+
+```{r gghighlight-near}
+library(gghighlight)
+wages %>%
+  left_join(wages_slope_near, by = "id") %>%
+  as_tibble() %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id,
+             colour = stat)) + 
+  geom_line() + 
+  gghighlight(!is.na(stat))
+
+```
+
+# Specify your own summaries for `keys_near`
+
+You can specify your own list of summaries to pass to `keys_near`.  For example, you could create your own summaries to give a sense of range. Note that the functions here start with `b_`, and are `b_summaries` provided by `brolgar` that have sensible defaults. You can [read about them here](https://brolgar.njtierney.com/reference/b_summaries.html), or with `?b_summaries`
+
+```{r create-your-own}
+l_ranges <- list(min = b_min,
+                range_diff = b_range_diff,
+                max = b_max,
+                iqr = b_iqr)
+
+wages %>%
+ key_slope(formula = ln_wages ~ xp) %>%
+ keys_near(key = id,
+           var = .slope_xp,
+           funs = l_ranges)
+
+```
+
+# Implementation of `keys_near`
+
+If you are interested in the specifics of how `keys_near()` works, this section describes how it is implemented in `brolgar`.
+
+To get the data into the right format, there are a few steps.
+
+First, we need to get the data into a format where we have all the statistics that we are interested in, along with the id, and the statistic of interest.
+
+We can fit a linear model for each `key` in the dataset using `key_slope()`.
+
+```{r key-slope}
+wages_slope <- key_slope(wages, ln_wages ~ xp)
+
+wages_slope
+```
+
+We can then perform a summary of the statistic of interest, in this case the slope.
+
+```{r mutate-all-wages}
+wages_slope_all_stats <- wages_slope %>%
+  mutate_at(.vars = vars(.slope_xp),
+            .funs = list(.slope_min = b_min,
+                         .slope_max = b_max,
+                         .slope_median = b_median,
+                         .slope_q1 = b_q25,
+                         .slope_q3 = b_q75)) %>%
+  select(id,
+         starts_with(".slope"))
+
+wages_slope_all_stats
+```
+
+We then need to convert this into long format
+
+```{r gather-wages}
+wages_slope_all_stats_long <- 
+wages_slope_all_stats %>%
+gather(key = "stat",
+         value = "stat_value",
+         -id,
+         -.slope_xp)
+
+wages_slope_all_stats_long
+```
+
+We can then calculate the difference between each stat and the slope, `.slope_xp`:
+```{r stats-diff}
+stats_diff <- 
+wages_slope_all_stats_long %>%
+  mutate(stat_diff = abs(.slope_xp - stat_value))
+
+stats_diff
+```
+
+With stats diff, we can then group by the `stat`, and find return those rows with the smallest difference between the statistic and the value:
+
+```{r choose-top-diff}
+top_stats_diff <- 
+stats_diff %>%
+  group_by(stat) %>%
+  top_n(-1,
+        wt = stat_diff)
+
+top_stats_diff
+```
+
+```{r join-top-stats-diff}
+top_stats_diff %>%
+  left_join(wages, by = "id") %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id,
+             colour = stat)) + 
+  geom_line()
+```
+
+We can see that we get the same output using `keys_near()`:
+
+```{r show-same}
+wages %>%
+  key_slope(ln_wages ~ xp) %>%
+  keys_near(key = id,
+            var = .slope_xp) %>%
+  left_join(wages, by = "id") %>%
+  ggplot(aes(x = xp,
+             y = ln_wages,
+             group = id,
+             colour = stat)) + 
+  geom_line()
+```
+
