@@ -6,11 +6,13 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![R build
 status](https://github.com/njtierney/brolgar/workflows/R-CMD-check/badge.svg)](https://github.com/njtierney/brolgar)
 [![Codecov test
 coverage](https://codecov.io/gh/njtierney/brolgar/branch/master/graph/badge.svg)](https://codecov.io/gh/njtierney/brolgar?branch=master)
+[![R-CMD-check](https://github.com/njtierney/brolgar/workflows/R-CMD-check/badge.svg)](https://github.com/njtierney/brolgar/actions)
+
 <!-- badges: end -->
 
 `brolgar` helps you **br**owse **o**ver **l**ongitudinal **d**ata

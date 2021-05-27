@@ -58,7 +58,7 @@ stratify_keys <- function(.data, n_strata, along = NULL, fun = mean, ...){
   UseMethod("stratify_keys")
   
 }
- 
+
 #' @export
 stratify_keys.tbl_ts <- function(.data, 
                                  n_strata, 
@@ -76,11 +76,14 @@ stratify_keys.tbl_ts <- function(.data,
   # could just return some vector of numbers?
   # perhaps that is the difference btn strata and stratify
   # strata returns a vector, stratify adds this to the data?
-    full_strata <- full_strata(.data, n_strata)
     
-    data_strata <- .data %>%
-      dplyr::mutate(.strata = full_strata)
-    # .strata = stratify(n_strata)
+    id_w_strata <- full_strata_df(.data, n_strata)
+    
+    only_strata <- dplyr::distinct(id_w_strata)
+    
+    data_strata <- dplyr::left_join(.data,
+                                    only_strata,
+                                    by = keys_chr)
     
     return(data_strata)
   } 
