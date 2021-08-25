@@ -1,6 +1,6 @@
 Package: brolgar
 Title: Browse Over Longitudinal Data Graphically and Analytically in R
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     c(person(given = "Nicholas",
              family = "Tierney",
@@ -50,8 +50,9 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 RoxygenNote: 7.1.1
+Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2021-05-26 01:39:44 UTC; njtierney
+Packaged: 2021-08-09 07:10:24 UTC; njtierney
 Author: Nicholas Tierney [aut, cre] (<https://orcid.org/0000-0003-1460-8722>),
   Di Cook [aut] (<https://orcid.org/0000-0002-3813-7155>),
   Tania Prvan [aut],
@@ -59,4 +60,4 @@ Author: Nicholas Tierney [aut, cre] (<https://orcid.org/0000-0003-1460-8722>),
   Earo Wang [ctb]
 Maintainer: Nicholas Tierney <nicholas.tierney@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-05-27 06:50:07 UTC
+Date/Publication: 2021-08-25 12:50:18 UTC

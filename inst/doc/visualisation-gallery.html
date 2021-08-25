@@ -296,7 +296,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>Plot individuals with negative slope</h2>
 <p>We can find those individuals who have a negative slope using <code>key_slope</code>. For more detail on <code>key_slope</code>, see the <a href="https://brolgar.njtierney.com/articles/exploratory-modelling.html">Exploratory Modelling</a> vignette.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>wages <span class="sc">%&gt;%</span> <span class="fu">key_slope</span>(ln_wages <span class="sc">~</span> xp)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 888 x 3</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 888 × 3</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       id .intercept .slope_xp</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;int&gt;      &lt;dbl&gt;     &lt;dbl&gt;</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1    31       1.41    0.101 </span></span>

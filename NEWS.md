@@ -1,4 +1,10 @@
-# brolgar 0.1.1 "Formerly known as the 'native companion'"
+# brolgar 0.1.2 "Also known as the 'Australian Crane'" (2021-08-06)
+
+## Minor Improvements
+
+* Uses Testthat Third edition, and implements snapshot testing
+
+# brolgar 0.1.1 "Formerly known as the 'native companion'" (2021-05-27)
 
 ## Bug fixes
 
