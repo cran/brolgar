@@ -6,21 +6,21 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![Codecov test
-coverage](https://codecov.io/gh/njtierney/brolgar/branch/master/graph/badge.svg)](https://codecov.io/gh/njtierney/brolgar?branch=master)
-[![R-CMD-check](https://github.com/njtierney/brolgar/workflows/R-CMD-check/badge.svg)](https://github.com/njtierney/brolgar/actions)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![R-CMD-check](https://github.com/njtierney/brolgar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/njtierney/brolgar/actions/workflows/R-CMD-check.yaml)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/brolgar)](https://CRAN.R-project.org/package=brolgar)
+[![Codecov test
+coverage](https://codecov.io/gh/njtierney/brolgar/branch/main/graph/badge.svg)](https://app.codecov.io/gh/njtierney/brolgar?branch=main)
 
 <!-- badges: end -->
 
 `brolgar` helps you **br**owse **o**ver **l**ongitudinal **d**ata
 **g**raphically and **a**nalytically in **R**, by providing tools to:
 
--   Efficiently explore raw longitudinal data
--   Calculate features (summaries) for individuals
--   Evaluate diagnostics of statistical models
+- Efficiently explore raw longitudinal data
+- Calculate features (summaries) for individuals
+- Evaluate diagnostics of statistical models
 
 This helps you go from the “plate of spaghetti” plot on the left, to
 “interesting observations” plot on the right.
@@ -34,6 +34,19 @@ Install from [GitHub](https://github.com/) with:
 ``` r
 # install.packages("remotes")
 remotes::install_github("njtierney/brolgar")
+```
+
+Or from the [R Universe](https://njtierney.r-universe.dev) with:
+
+``` r
+# Enable this universe
+options(repos = c(
+    njtierney = 'https://njtierney.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org')
+    )
+
+# Install some packages
+install.packages('brolgar')
 ```
 
 # Using `brolgar`: We need to talk about data
@@ -76,19 +89,19 @@ like this:
 wages
 #> # A tsibble: 6,402 x 9 [!]
 #> # Key:       id [888]
-#>       id ln_wages    xp   ged xp_since_ged black hispanic high_grade
-#>    <int>    <dbl> <dbl> <int>        <dbl> <int>    <int>      <int>
-#>  1    31     1.49 0.015     1        0.015     0        1          8
-#>  2    31     1.43 0.715     1        0.715     0        1          8
-#>  3    31     1.47 1.73      1        1.73      0        1          8
-#>  4    31     1.75 2.77      1        2.77      0        1          8
-#>  5    31     1.93 3.93      1        3.93      0        1          8
-#>  6    31     1.71 4.95      1        4.95      0        1          8
-#>  7    31     2.09 5.96      1        5.96      0        1          8
-#>  8    31     2.13 6.98      1        6.98      0        1          8
-#>  9    36     1.98 0.315     1        0.315     0        0          9
-#> 10    36     1.80 0.983     1        0.983     0        0          9
-#> # … with 6,392 more rows, and 1 more variable: unemploy_rate <dbl>
+#>       id ln_wages    xp   ged xp_since_ged black hispanic high_grade unemploy_…¹
+#>    <int>    <dbl> <dbl> <int>        <dbl> <int>    <int>      <int>       <dbl>
+#>  1    31     1.49 0.015     1        0.015     0        1          8        3.21
+#>  2    31     1.43 0.715     1        0.715     0        1          8        3.21
+#>  3    31     1.47 1.73      1        1.73      0        1          8        3.21
+#>  4    31     1.75 2.77      1        2.77      0        1          8        3.3 
+#>  5    31     1.93 3.93      1        3.93      0        1          8        2.89
+#>  6    31     1.71 4.95      1        4.95      0        1          8        2.49
+#>  7    31     2.09 5.96      1        5.96      0        1          8        2.6 
+#>  8    31     2.13 6.98      1        6.98      0        1          8        4.8 
+#>  9    36     1.98 0.315     1        0.315     0        0          9        4.89
+#> 10    36     1.80 0.983     1        0.983     0        0          9        7.4 
+#> # … with 6,392 more rows, and abbreviated variable name ¹​unemploy_rate
 ```
 
 And under the hood, it was created with the following setup:
@@ -184,7 +197,7 @@ number summary (min, max, q1, q3, and median) of `ln_wages` with
 wages %>%
   features(ln_wages,
            feat_five_num)
-#> # A tibble: 888 x 6
+#> # A tibble: 888 × 6
 #>       id   min   q25   med   q75   max
 #>    <int> <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1    31 1.43   1.48  1.73  2.02  2.13
@@ -209,7 +222,7 @@ increase or decrease with `feat_monotonic`:
 ``` r
 wages %>%
   features(ln_wages, feat_monotonic)
-#> # A tibble: 888 x 5
+#> # A tibble: 888 × 5
 #>       id increase decrease unvary monotonic
 #>    <int> <lgl>    <lgl>    <lgl>  <lgl>    
 #>  1    31 FALSE    FALSE    FALSE  FALSE    
@@ -244,6 +257,10 @@ wages %>%
              group = id)) +
   geom_line() + 
   gghighlight(increase)
+#> Warning in left_join(., wages, by = "id"): Each row in `x` is expected to match at most 1 row in `y`.
+#> ℹ Row 1 of `x` matches multiple rows.
+#> ℹ If multiple matches are expected, set `multiple = "all"` to silence this
+#>   warning.
 #> Warning: Tried to calculate with group_by(), but the calculation failed.
 #> Falling back to ungrouped filter operation...
 #> label_key: id
@@ -281,7 +298,7 @@ observations for each key:
 ``` r
 wages %>%
   features(ln_wages, n_obs)
-#> # A tibble: 888 x 2
+#> # A tibble: 888 × 2
 #>       id n_obs
 #>    <int> <int>
 #>  1    31     8
@@ -314,6 +331,7 @@ wages %>%
 <img src="man/figures/README-summarise-n-obs-1.png" width="75%" style="display: block; margin: auto;" />
 
 ``` r
+
 wages %>%
   features(ln_wages, n_obs) %>%
   summary()
@@ -335,10 +353,18 @@ and [Identify Interesting
 Observations](https://brolgar.njtierney.com/articles/id-interesting-obs.html)
 vignettes. As a taster, here are some of the figures you can produce:
 
+    #> Warning in left_join(., wages, by = "id"): Each row in `x` is expected to match at most 1 row in `y`.
+    #> ℹ Row 1 of `x` matches multiple rows.
+    #> ℹ If multiple matches are expected, set `multiple = "all"` to silence this
+    #>   warning.
     #> Warning: Tried to calculate with group_by(), but the calculation failed.
     #> Falling back to ungrouped filter operation...
     #> label_key: id
     #> Too many data series, skip labeling
+    #> Warning in left_join(., wages, by = "id"): Each row in `x` is expected to match at most 1 row in `y`.
+    #> ℹ Row 1 of `x` matches multiple rows.
+    #> ℹ If multiple matches are expected, set `multiple = "all"` to silence this
+    #>   warning.
 
 <img src="man/figures/README-show-wages-lg-1.png" width="75%" style="display: block; margin: auto;" />
 
@@ -346,7 +372,7 @@ vignettes. As a taster, here are some of the figures you can produce:
 
 One of the sources of inspiration for this work was the [`lasangar` R
 package by Bryan Swihart](https://github.com/swihart/lasagnar) (and
-[paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2937254/)).
+[paper](https://doi.org/10.1097%2FEDE.0b013e3181e5b06a)).
 
 For even more expansive time series summarisation, make sure you check
 out the [`feasts` package](https://github.com/tidyverts/feasts) (and
@@ -356,7 +382,7 @@ out the [`feasts` package](https://github.com/tidyverts/feasts) (and
 
 Please note that the `brolgar` project is released with a [Contributor
 Code of
-Conduct](https://github.com/njtierney/brolgar/blob/master/.github/CODE_OF_CONDUCT.md).
+Conduct](https://github.com/njtierney/brolgar/blob/main/.github/CODE_OF_CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
 
 # A Note on the API

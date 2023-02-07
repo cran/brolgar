@@ -14,25 +14,38 @@
 
 <title>Longitudinal Data Structures</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -50,55 +63,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -107,13 +119,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -125,7 +144,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -141,45 +340,91 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<p>There are many ways to describe longitudinal data - from panel data, cross-sectional data, and time series. We define longitudinal data as:</p>
+<p>There are many ways to describe longitudinal data - from panel data,
+cross-sectional data, and time series. We define longitudinal data
+as:</p>
 <blockquote>
-<p>Information from the same individuals, recorded at multiple points in time.</p>
+<p>Information from the same individuals, recorded at multiple points in
+time.</p>
 </blockquote>
-<p>To explore and model longitudinal data, It is important to understand what variables represent the individual components, and the time components, and how these identify an individual moving through time. Identifying the individual and time components can sometimes be a challenge, so this vignette walks through how to do this.</p>
+<p>To explore and model longitudinal data, It is important to understand
+what variables represent the individual components, and the time
+components, and how these identify an individual moving through time.
+Identifying the individual and time components can sometimes be a
+challenge, so this vignette walks through how to do this.</p>
 <div id="defining-longitudinal-data-as-a-tsibble" class="section level1">
 <h1>Defining longitudinal data as a <code>tsibble</code></h1>
-<p>The tools and workflows in <code>brolgar</code> are designed to work with a special tidy time series data frame called a <code>tsibble</code>. We can define our longitudinal data in terms of a time series to gain access to some really useful tools. To do so, we need to identify three components:</p>
+<p>The tools and workflows in <code>brolgar</code> are designed to work
+with a special tidy time series data frame called a
+<code>tsibble</code>. We can define our longitudinal data in terms of a
+time series to gain access to some really useful tools. To do so, we
+need to identify three components:</p>
 <ol style="list-style-type: decimal">
-<li>The <strong>key</strong> variable in your data is the <strong>identifier</strong> of your individual.</li>
-<li>The <strong>index</strong> variable is the <strong>time</strong> component of your data.</li>
-<li>The <strong>regularity</strong> of the time interval (index). Longitudinal data typically has irregular time periods between measurements, but can have regular measurements.</li>
+<li>The <strong>key</strong> variable in your data is the
+<strong>identifier</strong> of your individual.</li>
+<li>The <strong>index</strong> variable is the <strong>time</strong>
+component of your data.</li>
+<li>The <strong>regularity</strong> of the time interval (index).
+Longitudinal data typically has irregular time periods between
+measurements, but can have regular measurements.</li>
 </ol>
-<p>Together, time <strong>index</strong> and <strong>key</strong> uniquely identify an observation with repeated measurements</p>
-<p>The term <code>key</code> is used a lot in brolgar, so it is an important idea to internalise:</p>
+<p>Together, time <strong>index</strong> and <strong>key</strong>
+uniquely identify an observation with repeated measurements</p>
+<p>The term <code>key</code> is used a lot in brolgar, so it is an
+important idea to internalise:</p>
 <blockquote>
-<p><strong>The key is the identifier of your individuals or series</strong></p>
+<p><strong>The key is the identifier of your individuals or
+series</strong></p>
 </blockquote>
-<p>Why care about defining longitudinal data as a time series? Once we account for this time series structure inherent in longitudinal data, we gain access to a suite of nice tools that simplify and accelerate how we work with time series data.</p>
-<p><code>brolgar</code> is built on top of the powerful <a href="https://tsibble.tidyverts.org/"><code>tsibble</code></a> package by <a href="https://earo.me/">Earo Wang</a>, if you would like to learn more, see the <a href="https://tsibble.tidyverts.org/">official package documentation</a> or read <a href="https://arxiv.org/abs/1901.10257">the paper</a>.</p>
+<p>Why care about defining longitudinal data as a time series? Once we
+account for this time series structure inherent in longitudinal data, we
+gain access to a suite of nice tools that simplify and accelerate how we
+work with time series data.</p>
+<p><code>brolgar</code> is built on top of the powerful <a href="https://tsibble.tidyverts.org/"><code>tsibble</code></a> package
+by <a href="https://earo.me/">Earo Wang</a>, if you would like to learn
+more, see the <a href="https://tsibble.tidyverts.org/">official package
+documentation</a> or read <a href="https://arxiv.org/abs/1901.10257">the
+paper</a>.</p>
 <div id="converting-your-longitudinal-data-to-a-time-series" class="section level2">
 <h2>Converting your longitudinal data to a time series</h2>
-<p>To convert longitudinal data into a “<strong>t</strong>ime <strong>s</strong>eries tibble”, a <a href="https://tsibble.tidyverts.org/"><code>tsibble</code></a>, we need to consider which variables identify:</p>
+<p>To convert longitudinal data into a “<strong>t</strong>ime
+<strong>s</strong>eries tibble”, a <a href="https://tsibble.tidyverts.org/"><code>tsibble</code></a>, we need
+to consider which variables identify:</p>
 <ol style="list-style-type: decimal">
-<li>The individual, who would have repeated measurements. This is the <strong>key</strong></li>
+<li>The individual, who would have repeated measurements. This is the
+<strong>key</strong></li>
 <li>The time component, this is the <strong>index</strong> .</li>
 <li>The <strong>regularity</strong> of the time interval (index).</li>
 </ol>
-<p>Together, time <strong>index</strong> and <strong>key</strong> uniquely identify an observation with repeated measurements</p>
-<p>The vignette now walks through some examples of converting longitudinal data into a <code>tsibble</code>.</p>
+<p>Together, time <strong>index</strong> and <strong>key</strong>
+uniquely identify an observation with repeated measurements</p>
+<p>The vignette now walks through some examples of converting
+longitudinal data into a <code>tsibble</code>.</p>
 </div>
 </div>
 <div id="example-data-wages" class="section level1">
 <h1>example data: wages</h1>
-<p>Let’s look at the <strong>wages</strong> data analysed in Singer &amp; Willett (2003). This data contains measurements on hourly wages by years in the workforce, with education and race as covariates. The population measured was male high-school dropouts, aged between 14 and 17 years when first measured. Below is the first 10 rows of the data.</p>
+<p>Let’s look at the <strong>wages</strong> data analysed in Singer
+&amp; Willett (2003). This data contains measurements on hourly wages by
+years in the workforce, with education and race as covariates. The
+population measured was male high-school dropouts, aged between 14 and
+17 years when first measured. Below is the first 10 rows of the
+data.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brolgar)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(dplyr))</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">slice</span>(wages, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col width="4%" />
+<col width="12%" />
+<col width="8%" />
+<col width="5%" />
+<col width="17%" />
+<col width="8%" />
+<col width="12%" />
+<col width="14%" />
+<col width="18%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="right">id</th>
@@ -306,20 +551,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 </tbody>
 </table>
-<p>To create a <code>tsibble</code> of the data we ask, “which variables identify…”:</p>
+<p>To create a <code>tsibble</code> of the data we ask, “which variables
+identify…”:</p>
 <ol style="list-style-type: decimal">
-<li>The <strong>key</strong>, the individual, who would have repeated measurements.</li>
+<li>The <strong>key</strong>, the individual, who would have repeated
+measurements.</li>
 <li>The <strong>index</strong>, the time component.</li>
 <li>The <strong>regularity</strong> of the time interval (index).</li>
 </ol>
-<p>Together, time <strong>index</strong> and <strong>key</strong> uniquely identify an observation with repeated measurements</p>
+<p>Together, time <strong>index</strong> and <strong>key</strong>
+uniquely identify an observation with repeated measurements</p>
 <p>From this, we can say that:</p>
 <ol style="list-style-type: decimal">
-<li>The <strong>key</strong> is the variable <code>id</code> - the subject id, from 1-888.</li>
-<li>The <strong>index</strong> is the variable <code>xp</code> the experience in years an individual has.</li>
-<li>The data is <strong>irregular</strong> since the experience is a fraction of year that is not an integer.</li>
+<li>The <strong>key</strong> is the variable <code>id</code> - the
+subject id, from 1-888.</li>
+<li>The <strong>index</strong> is the variable <code>xp</code> the
+experience in years an individual has.</li>
+<li>The data is <strong>irregular</strong> since the experience is a
+fraction of year that is not an integer.</li>
 </ol>
-<p>We can use this information to create a <code>tsibble</code> of this data using <code>as_tsibble</code></p>
+<p>We can use this information to create a <code>tsibble</code> of this
+data using <code>as_tsibble</code></p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tsibble)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tsibble</span>(<span class="at">x =</span> wages,</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">key =</span> id,</span>
@@ -327,21 +579,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">regular =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <pre><code>#&gt; # A tsibble: 6,402 x 9 [!]
 #&gt; # Key:       id [888]
-#&gt;       id ln_wages    xp   ged xp_since_ged black hispanic high_grade
-#&gt;    &lt;int&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;        &lt;dbl&gt; &lt;int&gt;    &lt;int&gt;      &lt;int&gt;
-#&gt;  1    31     1.49 0.015     1        0.015     0        1          8
-#&gt;  2    31     1.43 0.715     1        0.715     0        1          8
-#&gt;  3    31     1.47 1.73      1        1.73      0        1          8
-#&gt;  4    31     1.75 2.77      1        2.77      0        1          8
-#&gt;  5    31     1.93 3.93      1        3.93      0        1          8
-#&gt;  6    31     1.71 4.95      1        4.95      0        1          8
-#&gt;  7    31     2.09 5.96      1        5.96      0        1          8
-#&gt;  8    31     2.13 6.98      1        6.98      0        1          8
-#&gt;  9    36     1.98 0.315     1        0.315     0        0          9
-#&gt; 10    36     1.80 0.983     1        0.983     0        0          9
-#&gt; # … with 6,392 more rows, and 1 more variable: unemploy_rate &lt;dbl&gt;</code></pre>
-<p>Note that <code>regular = FALSE</code>, since we have an <code>irregular</code> time series</p>
-<p>Note the following information printed at the top of <code>wages</code></p>
+#&gt;       id ln_wages    xp   ged xp_since_ged black hispanic high_grade unemploy_…¹
+#&gt;    &lt;int&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;        &lt;dbl&gt; &lt;int&gt;    &lt;int&gt;      &lt;int&gt;       &lt;dbl&gt;
+#&gt;  1    31     1.49 0.015     1        0.015     0        1          8        3.21
+#&gt;  2    31     1.43 0.715     1        0.715     0        1          8        3.21
+#&gt;  3    31     1.47 1.73      1        1.73      0        1          8        3.21
+#&gt;  4    31     1.75 2.77      1        2.77      0        1          8        3.3 
+#&gt;  5    31     1.93 3.93      1        3.93      0        1          8        2.89
+#&gt;  6    31     1.71 4.95      1        4.95      0        1          8        2.49
+#&gt;  7    31     2.09 5.96      1        5.96      0        1          8        2.6 
+#&gt;  8    31     2.13 6.98      1        6.98      0        1          8        4.8 
+#&gt;  9    36     1.98 0.315     1        0.315     0        0          9        4.89
+#&gt; 10    36     1.80 0.983     1        0.983     0        0          9        7.4 
+#&gt; # … with 6,392 more rows, and abbreviated variable name ¹​unemploy_rate</code></pre>
+<p>Note that <code>regular = FALSE</code>, since we have an
+<code>irregular</code> time series</p>
+<p>Note the following information printed at the top of
+<code>wages</code></p>
 <pre><code># A tsibble: 6,402 x 9 [!]
 # Key:       id [888]
 ...</code></pre>
@@ -350,12 +604,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>We have 6402 rows,</li>
 <li>with 9 columns.</li>
 </ul>
-<p>The <code>!</code> at the top means that there is no regular spacing between series</p>
-<p>The “key” variable is then listed - <code>id</code>, of which there 888.</p>
+<p>The <code>!</code> at the top means that there is no regular spacing
+between series</p>
+<p>The “key” variable is then listed - <code>id</code>, of which there
+888.</p>
 </div>
 <div id="example-heights-data" class="section level1">
 <h1>example: heights data</h1>
-<p>The heights data is a little simpler than the wages data, and contains the average male heights in 144 countries from 1810-1989, with a smaller number of countries from 1500-1800.</p>
+<p>The heights data is a little simpler than the wages data, and
+contains the average male heights in 144 countries from 1810-1989, with
+a smaller number of countries from 1500-1800.</p>
 <p>It contains four variables:</p>
 <ul>
 <li>country</li>
@@ -363,9 +621,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>year</li>
 <li>height_cm</li>
 </ul>
-<p>To create a <code>tsibble</code> of the data we ask, “which variables identify…”:</p>
+<p>To create a <code>tsibble</code> of the data we ask, “which variables
+identify…”:</p>
 <ol style="list-style-type: decimal">
-<li>The <strong>key</strong>, the individual, who would have repeated measurements.</li>
+<li>The <strong>key</strong>, the individual, who would have repeated
+measurements.</li>
 <li>The <strong>index</strong>, the time component.</li>
 <li>The <strong>regularity</strong> of the time interval (index).</li>
 </ol>
@@ -373,9 +633,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li>The individual is not a person, but a country</li>
 <li>The time is year</li>
-<li>The year is not regular because there are not measurements at a fixed year point.</li>
+<li>The year is not regular because there are not measurements at a
+fixed year point.</li>
 </ul>
-<p>This data is already a <code>tsibble</code> object, we can create a <code>tsibble</code> with the following code:</p>
+<p>This data is already a <code>tsibble</code> object, we can create a
+<code>tsibble</code> with the following code:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tsibble</span>(<span class="at">x =</span> heights,</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">key =</span> country,</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> year,</span>
@@ -398,7 +660,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="example-gapminder" class="section level1">
 <h1>example: gapminder</h1>
-<p>The gapminder R package contains a dataset of a subset of the gapminder study (link). This contains data on life expectancy, GDP per capita, and population by country.</p>
+<p>The gapminder R package contains a dataset of a subset of the
+gapminder study (link). This contains data on life expectancy, GDP per
+capita, and population by country.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gapminder)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>gapminder</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,704 × 6</span></span>
@@ -417,7 +681,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1,694 more rows</span></span></code></pre></div>
 <p>Let’s identify</p>
 <ol style="list-style-type: decimal">
-<li>The <strong>key</strong>, the individual, who would have repeated measurements.</li>
+<li>The <strong>key</strong>, the individual, who would have repeated
+measurements.</li>
 <li>The <strong>index</strong>, the time component.</li>
 <li>The <strong>regularity</strong> of the time interval (index).</li>
 </ol>
@@ -426,13 +691,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>The <strong>key</strong> is the country</li>
 <li>The <strong>index</strong> is the year</li>
 </ol>
-<p>To identify if the year is regular, we can do a bit of data exploration using <code>index_summary()</code></p>
+<p>To identify if the year is regular, we can do a bit of data
+exploration using <code>index_summary()</code></p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span> </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country) <span class="sc">%&gt;%</span> </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">index_summary</span>(year)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    1952    1966    1980    1980    1993    2007</span></span></code></pre></div>
-<p>This shows us that the year is every five - so now we know that this is a regular longitudinal dataset, and can be encoded like so:</p>
+<p>This shows us that the year is every five - so now we know that this
+is a regular longitudinal dataset, and can be encoded like so:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tsibble</span>(gapminder,</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">key =</span> country,</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">index =</span> year,</span>
@@ -455,30 +722,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="example-pisa-data" class="section level1">
 <h1>example: PISA data</h1>
-<p>The PISA study measures school students around the world on a series of math, reading, and science scores. A subset of the data looks like so:</p>
+<p>The PISA study measures school students around the world on a series
+of math, reading, and science scores. A subset of the data looks like
+so:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pisa</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 433 × 11</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    country  year math_mean math_min math_max read_mean read_min read_max</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;   &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 ALB      2000      395.     27.4     722.      354.  59.7        640.</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 ALB      2009      377.     79.6     706.      385.  17.0        662.</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 ALB      2012      395.     62.4     688.      394.   0.0834     742.</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 ALB      2015      412.    122.      711.      405.  93.6        825.</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 ALB      2018      437.     96.5     789.      405. 152.         693.</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 ARE      2009      421.     57.8     768.      431.  48.1        772.</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 ARE      2012      434.    138.      862.      442.  75.5        785.</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 ARE      2015      427.     91.8     793.      432.  54.4        827.</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 ARE      2018      437.     87.6     865.      431.  84.0        814.</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 ARG      2000      385.     16.0     675.      417.  84.2        761.</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 423 more rows, and 3 more variables: science_mean &lt;dbl&gt;,</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   science_min &lt;dbl&gt;, science_max &lt;dbl&gt;</span></span></code></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    country  year math_…¹ math_…² math_…³ read_…⁴ read_…⁵ read_…⁶ scien…⁷ scien…⁸</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 ALB      2000    395.    27.4    722.    354. 5.97e+1    640.    378.    47.6</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 ALB      2009    377.    79.6    706.    385. 1.70e+1    662.    390.    74.8</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 ALB      2012    395.    62.4    688.    394. 8.34e-2    742.    398.    39.7</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 ALB      2015    412.   122.     711.    405. 9.36e+1    825.    427.   139. </span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 ALB      2018    437.    96.5    789.    405. 1.52e+2    693.    416.   166. </span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 ARE      2009    421.    57.8    768.    431. 4.81e+1    772.    437.    61.7</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 ARE      2012    434.   138.     862.    442. 7.55e+1    785.    449.   104. </span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 ARE      2015    427.    91.8    793.    432. 5.44e+1    827.    437.    88.2</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 ARE      2018    437.    87.6    865.    431. 8.40e+1    814.    433.    86.3</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 ARG      2000    385.    16.0    675.    417. 8.42e+1    761.    395.    53.0</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 423 more rows, 1 more variable: science_max &lt;dbl&gt;, and abbreviated</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   variable names ¹​math_mean, ²​math_min, ³​math_max, ⁴​read_mean, ⁵​read_min,</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁶​read_max, ⁷​science_mean, ⁸​science_min</span></span></code></pre></div>
 <p>Let’s identify</p>
 <ol style="list-style-type: decimal">
-<li>The <strong>key</strong>, the individual, who would have repeated measurements.</li>
+<li>The <strong>key</strong>, the individual, who would have repeated
+measurements.</li>
 <li>The <strong>index</strong>, the time component.</li>
 <li>The <strong>regularity</strong> of the time interval (index).</li>
 </ol>
-<p>Here it looks like the key is the student_id, which is nested within school_id and country,</p>
+<p>Here it looks like the key is the student_id, which is nested within
+school_id and country,</p>
 <p>And the index is year, so we would write the following</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tsibble</span>(pisa, </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">key =</span> <span class="fu">c</span>(country),</span>
@@ -498,24 +770,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>pisa_ts</span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tsibble: 433 x 11 [3Y]</span></span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Key:       country [100]</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    country  year math_mean math_min math_max read_mean read_min read_max</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;   &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 ALB      2000      395.     27.4     722.      354.  59.7        640.</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 ALB      2009      377.     79.6     706.      385.  17.0        662.</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 ALB      2012      395.     62.4     688.      394.   0.0834     742.</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 ALB      2015      412.    122.      711.      405.  93.6        825.</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 ALB      2018      437.     96.5     789.      405. 152.         693.</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 ARE      2009      421.     57.8     768.      431.  48.1        772.</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 ARE      2012      434.    138.      862.      442.  75.5        785.</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 ARE      2015      427.     91.8     793.      432.  54.4        827.</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 ARE      2018      437.     87.6     865.      431.  84.0        814.</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 ARG      2000      385.     16.0     675.      417.  84.2        761.</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 423 more rows, and 3 more variables: science_mean &lt;dbl&gt;,</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   science_min &lt;dbl&gt;, science_max &lt;dbl&gt;</span></span></code></pre></div>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    country  year math_…¹ math_…² math_…³ read_…⁴ read_…⁵ read_…⁶ scien…⁷ scien…⁸</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 ALB      2000    395.    27.4    722.    354. 5.97e+1    640.    378.    47.6</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 ALB      2009    377.    79.6    706.    385. 1.70e+1    662.    390.    74.8</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 ALB      2012    395.    62.4    688.    394. 8.34e-2    742.    398.    39.7</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 ALB      2015    412.   122.     711.    405. 9.36e+1    825.    427.   139. </span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 ALB      2018    437.    96.5    789.    405. 1.52e+2    693.    416.   166. </span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 ARE      2009    421.    57.8    768.    431. 4.81e+1    772.    437.    61.7</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 ARE      2012    434.   138.     862.    442. 7.55e+1    785.    449.   104. </span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 ARE      2015    427.    91.8    793.    432. 5.44e+1    827.    437.    88.2</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 ARE      2018    437.    87.6    865.    431. 8.40e+1    814.    433.    86.3</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 ARG      2000    385.    16.0    675.    417. 8.42e+1    761.    395.    53.0</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 423 more rows, 1 more variable: science_max &lt;dbl&gt;, and abbreviated</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   variable names ¹​math_mean, ²​math_min, ³​math_max, ⁴​read_mean, ⁵​read_min,</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁶​read_max, ⁷​science_mean, ⁸​science_min</span></span></code></pre></div>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p>This idea of longitudinal data is core to brolgar. Understanding what longitudinal data is, and how this can be linked to a time series representation of data helps us understand our data structure, and gives us access to more flexible tools. Other vignettes in the package will further show why the time series <code>tsibble</code> is useful.</p>
+<p>This idea of longitudinal data is core to brolgar. Understanding what
+longitudinal data is, and how this can be linked to a time series
+representation of data helps us understand our data structure, and gives
+us access to more flexible tools. Other vignettes in the package will
+further show why the time series <code>tsibble</code> is useful.</p>
 </div>
 
 
