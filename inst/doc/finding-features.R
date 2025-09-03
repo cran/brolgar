@@ -83,15 +83,15 @@ heights %>%
   features(height_cm, feat_three)
 
 ## ----demo-feat-five-num, eval = FALSE-----------------------------------------
-#  feat_five_num <- function(x, ...) {
-#    list(
-#      min = b_min(x, ...),
-#      q25 = b_q25(x, ...),
-#      med = b_median(x, ...),
-#      q75 = b_q75(x, ...),
-#      max = b_max(x, ...)
-#    )
-#  }
+# feat_five_num <- function(x, ...) {
+#   list(
+#     min = b_min(x, ...),
+#     q25 = b_q25(x, ...),
+#     med = b_median(x, ...),
+#     q75 = b_q75(x, ...),
+#     max = b_max(x, ...)
+#   )
+# }
 
 ## ----show-features-set--------------------------------------------------------
 library(fabletools)
@@ -103,8 +103,8 @@ wages %>%
   features(ln_wages, feat_brolgar)
 
 ## ----show-register-feature, eval = FALSE--------------------------------------
-#  .onLoad <- function(...) {
-#    fabletools::register_feature(feat_three_num, c("summary"))
-#    # ... and as many as you want here!
-#  }
+# .onLoad <- function(...) {
+#   fabletools::register_feature(feat_three_num, c("summary"))
+#   # ... and as many as you want here!
+# }
 

@@ -10,10 +10,10 @@ knitr::opts_chunk$set(
 library(brolgar)
 
 ## ----wages-ts, eval = FALSE---------------------------------------------------
-#  wages <- as_tsibble(wages,
-#                      key = id,
-#                      index = xp,
-#                      regular = FALSE)
+# wages <- as_tsibble(wages,
+#                     key = id,
+#                     index = xp,
+#                     regular = FALSE)
 
 ## ----n-obs--------------------------------------------------------------------
 n_keys(wages)

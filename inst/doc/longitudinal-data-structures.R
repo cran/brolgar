@@ -13,11 +13,11 @@ suppressPackageStartupMessages(library(dplyr))
 slice(wages, 1:10) %>% knitr::kable()
 
 ## ----create-tsibble, eval = FALSE---------------------------------------------
-#  library(tsibble)
-#  as_tsibble(x = wages,
-#             key = id,
-#             index = xp,
-#             regular = FALSE)
+# library(tsibble)
+# as_tsibble(x = wages,
+#            key = id,
+#            index = xp,
+#            regular = FALSE)
 
 ## ----print-wages-tsibble, echo = FALSE----------------------------------------
 wages

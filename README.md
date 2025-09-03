@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# brolgar
+# brolgar <a href="https://brolgar.njtierney.com/"><img src="man/figures/brolgar-logo.png" align="right" height="138" /></a>
 
 <!-- badges: start -->
 
@@ -13,6 +13,8 @@ status](https://www.r-pkg.org/badges/version/brolgar)](https://CRAN.R-project.or
 [![Codecov test
 coverage](https://codecov.io/gh/njtierney/brolgar/branch/main/graph/badge.svg)](https://app.codecov.io/gh/njtierney/brolgar?branch=main)
 
+[![Codecov test
+coverage](https://codecov.io/gh/njtierney/brolgar/graph/badge.svg)](https://app.codecov.io/gh/njtierney/brolgar)
 <!-- badges: end -->
 
 `brolgar` helps you **br**owse **o**ver **l**ongitudinal **d**ata
@@ -397,7 +399,12 @@ Prvan](https://researchers.mq.edu.au/en/persons/tania-prvan) for her
 valuable early contributions to the project, as well as [Stuart
 Lee](https://stuartlee.org/) for helpful discussions. Thanks also to
 [Ursula Laa](https://uschilaa.github.io/) for her feedback on the
-package structure and documentation.
+package structure and documentation. Thank you to [Di
+Cook](https://www.dicook.org/) for making the hex sticker - which is
+taken from an illustration by [John
+Gould](https://en.wikipedia.org/wiki/John_Gould), drawn in 1865, and is
+in the public domain as the drawing is over 100 years old.
 
 <!-- These are referred to as a **longnostics**, a portmanteau of **long**itudinal and **cognostic**. These **longnostics** make it straightforward to extract subjects with certain properties to gain some insight into the data.  -->
+
 <!-- But calculating this for individuals draws you away from your analysis, and instead you are now wrangling with a different problem: summarising key information about each individual and incorporating that back into the data.  -->
